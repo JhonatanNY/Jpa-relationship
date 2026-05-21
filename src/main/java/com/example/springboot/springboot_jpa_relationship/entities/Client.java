@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +30,7 @@ public class Client {
     private String lastname;
 
     // @JoinColumn(name = "client_id")
-    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany( cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinTable(
         name="tbl_clientes_to_direcciones", 
         joinColumns = @JoinColumn(name="id_cliente"),
@@ -37,8 +38,12 @@ public class Client {
         uniqueConstraints = @UniqueConstraint(columnNames = {"id_direcciones"}))
     private List<Address> addresses;
 
+    @OneToMany(cascade= CascadeType.ALL, orphanRemoval = true, mappedBy = "client")
+    private List<Invoice> invoices;
+
     public Client() {
         addresses = new ArrayList<>();
+        invoices = new ArrayList<>();
     }
 
     public Client(String name, String lastName) {
@@ -74,12 +79,20 @@ public class Client {
         this.addresses = addresses;
     }
 
-    @Override
-    public String toString() {
-        return "{id=" + id + ", name=" + name + ", lastname=" + lastname + ", addresses=" + addresses + "}";
+    
+
+    public List<Invoice> getInvoices() {
+        return invoices;
     }
 
+    public void setInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
+    }
 
+    @Override
+    public String toString() {
+        return "{id=" + id + ", name=" + name + ", lastname=" + lastname + ", addresses=" + addresses + "invoices=" + invoices + "}";
+    }
 
     
 }
