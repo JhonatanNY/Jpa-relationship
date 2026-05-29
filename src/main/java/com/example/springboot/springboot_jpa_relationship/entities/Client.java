@@ -1,7 +1,9 @@
 package com.example.springboot.springboot_jpa_relationship.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -17,6 +19,8 @@ import jakarta.persistence.UniqueConstraint;
 
 //¿Qué es el dueño de la relación?
 //El dueño es: La entidad que controla la clave foránea (FK) en la base de datos
+//Cascade REMOVE Se ejecuta cuando eliminas el PADRE.
+//orphanRemoval: Si un hijo se elimina de la colección, hibernate también lo elimina de la BD.
 
 @Entity
 @Table(name="clients")
@@ -36,14 +40,14 @@ public class Client {
         joinColumns = @JoinColumn(name="id_cliente"),
         inverseJoinColumns = @JoinColumn(name="id_direcciones"),
         uniqueConstraints = @UniqueConstraint(columnNames = {"id_direcciones"}))
-    private List<Address> addresses;
+    private Set<Address> addresses;
 
     @OneToMany(cascade= CascadeType.ALL, orphanRemoval = true, mappedBy = "client")
-    private List<Invoice> invoices;
+    private Set<Invoice> invoices;
 
     public Client() {
-        addresses = new ArrayList<>();
-        invoices = new ArrayList<>();
+        addresses = new HashSet<>();
+        invoices = new HashSet<>();
     }
 
     public Client(String name, String lastName) {
@@ -71,27 +75,38 @@ public class Client {
         this.lastname = lastName;
     }
 
-    public List<Address> getAddresses() {
+    public Set<Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(List<Address> addresses) {
+    public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
     }
 
     
 
-    public List<Invoice> getInvoices() {
+    public Set<Invoice> getInvoices() {
         return invoices;
     }
 
-    public void setInvoices(List<Invoice> invoices) {
+    public void setInvoices(Set<Invoice> invoices) {
         this.invoices = invoices;
+    }
+
+    public Client addInvoice(Invoice invoice){
+        invoices.add(invoice);
+        invoice.setClient(this);
+        return this;
+    }
+
+    public void removeInvoice(Invoice invoice) {
+        this.getInvoices().remove(invoice);
+        invoice.setClient(null);
     }
 
     @Override
     public String toString() {
-        return "{id=" + id + ", name=" + name + ", lastname=" + lastname + ", addresses=" + addresses + "invoices=" + invoices + "}";
+        return "{id=" + id + ", name=" + name + ", lastname=" + lastname + ", addresses=" + addresses + ", invoices=" + invoices + "}";
     }
 
     
