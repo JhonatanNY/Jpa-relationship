@@ -24,7 +24,7 @@ public class Student {
 
     private String name;
 
-    private String lastName;
+    private String lastname;
 
     @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinTable(name = "tbl_alumnos_cursos", joinColumns = @JoinColumn(name="alumno_id"),
@@ -38,7 +38,7 @@ public class Student {
     public Student(String name, String lastName) {
         this();
         this.name = name;
-        this.lastName = lastName;
+        this.lastname = lastName;
     }
 
     
@@ -60,11 +60,11 @@ public class Student {
     }
 
     public String getLastName() {
-        return lastName;
+        return lastname;
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastname = lastName;
     }
 
     public Set<Course> getCourses() {
@@ -77,7 +77,7 @@ public class Student {
 
     @Override
     public String toString() {
-        return "{id=" + id + ", name=" + name + ", lastName=" + lastName + ", courses=" + courses + "}";
+        return "{id=" + id + ", name=" + name + ", lastName=" + lastname + ", courses=" + courses + "}";
     }
 
 
