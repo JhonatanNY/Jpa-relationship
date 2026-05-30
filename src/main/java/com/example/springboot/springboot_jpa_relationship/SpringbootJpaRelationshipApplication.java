@@ -16,10 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.springboot.springboot_jpa_relationship.entities.Address;
 import com.example.springboot.springboot_jpa_relationship.entities.Client;
 import com.example.springboot.springboot_jpa_relationship.entities.ClientDetails;
+import com.example.springboot.springboot_jpa_relationship.entities.Course;
 import com.example.springboot.springboot_jpa_relationship.entities.Invoice;
+import com.example.springboot.springboot_jpa_relationship.entities.Student;
 import com.example.springboot.springboot_jpa_relationship.repositories.ClientDetailsRepository;
 import com.example.springboot.springboot_jpa_relationship.repositories.ClientRepository;
 import com.example.springboot.springboot_jpa_relationship.repositories.InvoiceRepository;
+import com.example.springboot.springboot_jpa_relationship.repositories.StudentRepository;
 
 @SpringBootApplication
 public class SpringbootJpaRelationshipApplication implements CommandLineRunner {
@@ -33,24 +36,97 @@ public class SpringbootJpaRelationshipApplication implements CommandLineRunner {
 	@Autowired
 	private ClientDetailsRepository clientDetailsRepository;
 
+	@Autowired
+	private StudentRepository studentRepository;
+
+	
+
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootJpaRelationshipApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		oneToOne();
+		manyToMany();
+	}
+
+	@Transactional
+	public void manyToMany(){
+		Student student1 = new Student("Jhon","Yataco");
+		Student student2 = new Student("Marcelo","Nuñez");
+
+		Course course1 = new Course("Curso de java master", "Andres Guzman");
+		Course course2 = new Course("Curso de Spring Boot", "Usbaldo");
+
+		student1.setCourses(Set.of(course1,course2));
+		student2.setCourses(Set.of(course2));
+
+
+		studentRepository.saveAll(Set.of(student1,student2));
+
+		System.out.println(student1);
+		System.out.println(student2);
+	}
+
+	@Transactional
+	public void oneToOneBidireccionalFindById() {
+		Optional<Client> clientOptional = clientRepository.findOne(1L);
+		clientOptional.ifPresent(client -> {
+
+			ClientDetails clientDetails = new ClientDetails(true,5000);
+	
+			client.setClientDetails(clientDetails);
+
+			clientRepository.save(client);
+
+			System.out.println(client);
+
+		});
+
+	}
+
+	@Transactional
+	public void oneToOneBidireccional(){
+		Client client = new Client("Jhon", "Nuñez");
+		ClientDetails clientDetails = new ClientDetails(true,5000);
+
+		client.setClientDetails(clientDetails);
+
+		clientRepository.save(client);
+
+		System.out.println(client);
+
+	}
+
+	@Transactional
+	public void oneToOneFindById(){
+		
+		ClientDetails clientDetails = new ClientDetails(true,5000);
+		clientDetailsRepository.save(clientDetails);
+
+		Optional<Client> clientOptional = clientRepository.findOne(2L);
+		clientOptional.ifPresent(client -> {
+		
+		client.setClientDetails(clientDetails);
+		clientRepository.save(client);
+
+		System.out.println(client);
+		});
+
 	}
 
 	@Transactional
 	public void oneToOne(){
+		
+		ClientDetails clientDetails = new ClientDetails(true,5000);
+		clientDetailsRepository.save(clientDetails);
 
 		Client client = new Client("Jhon", "Nuñez");
+		client.setClientDetails(clientDetails);
 		clientRepository.save(client);
 
-		ClientDetails clientDetails = new ClientDetails(true,5000);
-		clientDetails.setClient(client);
-		clientDetailsRepository.save(clientDetails);
+		System.out.println(client);
+
 	}
 
 	@Transactional
